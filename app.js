@@ -85,19 +85,7 @@ passport.use(
   )
 );
 //Instagram login route
-app.get(
-  "/auth/instagram",
-  passport.authenticate("instagram", {
-    scope: [
-      "basic",
-      "public_content",
-      "follower_list",
-      "comments",
-      "relationships",
-      "likes",
-    ],
-  })
-);
+app.get("/auth/instagram", passport.authenticate("instagram"));
 //LinkedIn login route
 app.get("/auth/linkedin", passport.authenticate("linkedin"));
 // callback method which linkedin will hit after successfull login of user
