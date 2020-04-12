@@ -18,7 +18,7 @@ app.use(express.static(__dirname + "/public"));
 //
 app.use(
   session({
-    secret: process.env.sessionSecret,
+    secret: process.env.SESSIONSECRET,
     resave: false,
     saveUninitialized: false,
   })
@@ -39,11 +39,12 @@ passport.deserializeUser(function (obj, done) {
 });
 
 //
+console.log(process.env.LINKEDINCLIENTID);
 passport.use(
   new LinkedInStrategy(
     {
-      clientID: process.env.linkedInClientId,
-      clientSecret: process.env.linkedInClientSecret,
+      clientID: process.env.LINKEDINCLIENTID,
+      clientSecret: process.env.LINKEDINCLIENTSECRET,
       callbackURL: "http://localhost:3000/callback/",
       scope: ["r_emailaddress", "r_liteprofile"],
     },
@@ -63,8 +64,8 @@ passport.use(
 passport.use(
   new InstagramStrategy(
     {
-      clientID: process.env.instaClientID,
-      clientSecret: process.env.instaClientSecret,
+      clientID: process.env.INSTACLIENTID,
+      clientSecret: process.env.INSTACLIENTSECRET,
       callbackURL: "http://localhost:3000/auth/instagram/callback",
       scope: ["user_profile"],
     },
