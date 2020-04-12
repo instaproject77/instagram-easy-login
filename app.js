@@ -27,7 +27,7 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.listen(3000 || process.env.PORT, function () {
+app.listen(process.env.PORT || 3000, function () {
   console.log("server running on port:3000");
 });
 
