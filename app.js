@@ -68,7 +68,8 @@ passport.use(
     {
       clientID: process.env.INSTACLIENTID,
       clientSecret: process.env.INSTACLIENTSECRET,
-      callbackURL: "http://localhost:3000/auth/instagram/callback",
+      callbackURL:
+        "https://fast-tundra-53694.herokuapp.com/auth/instagram/callback",
       scope: ["user_profile"],
     },
     (accessToken, refreshToken, profile, done) => {
