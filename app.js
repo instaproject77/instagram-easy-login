@@ -1,4 +1,6 @@
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 let express = require("express"),
   util = require("util"),
   session = require("express-session"),
