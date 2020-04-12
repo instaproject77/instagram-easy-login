@@ -70,6 +70,7 @@ passport.use(
       clientSecret: process.env.INSTACLIENTSECRET,
       callbackURL:
         "https://fast-tundra-53694.herokuapp.com/auth/instagram/callback",
+      scope: ["user_profile", "user_media"],
     },
     (accessToken, refreshToken, profile, done) => {
       // asynchronous verification, for effect...
@@ -84,7 +85,10 @@ passport.use(
   )
 );
 //Instagram login route
-app.get("/auth/instagram", passport.authenticate("instagram"));
+app.get(
+  "/auth/instagram",
+  passport.authenticate("instagram", { scope: ["basic"] })
+);
 //LinkedIn login route
 app.get("/auth/linkedin", passport.authenticate("linkedin"));
 // callback method which linkedin will hit after successfull login of user
