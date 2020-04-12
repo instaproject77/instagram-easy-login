@@ -70,7 +70,6 @@ passport.use(
       clientSecret: process.env.INSTACLIENTSECRET,
       callbackURL:
         "https://fast-tundra-53694.herokuapp.com/auth/instagram/callback",
-      scope: ["user_profile", "user_media"],
     },
     (accessToken, refreshToken, profile, done) => {
       // asynchronous verification, for effect...
