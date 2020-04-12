@@ -70,11 +70,12 @@ passport.use(
       clientSecret: process.env.INSTACLIENTSECRET,
       callbackURL:
         "https://fast-tundra-53694.herokuapp.com/auth/instagram/callback",
-      scope: ["user_profile"],
+      scope: ["user_profile", "user_media"],
     },
     (accessToken, refreshToken, profile, done) => {
+      // asynchronous verification, for effect...
       process.nextTick(function () {
-        // To keep the example simple, the user's instagram profile is returned to
+        // To keep the example simple, the user's LinkedIn profile is returned to
         // represent the logged-in user. In a typical application, you would want
         // to associate the LinkedIn account with a user record in your database,
         // and return that user instead.
@@ -84,7 +85,19 @@ passport.use(
   )
 );
 //Instagram login route
-app.get("/auth/instagram", passport.authenticate("instagram"));
+app.get(
+  "/auth/instagram",
+  passport.authenticate("instagram", {
+    scope: [
+      "basic",
+      "public_content",
+      "follower_list",
+      "comments",
+      "relationships",
+      "likes",
+    ],
+  })
+);
 //LinkedIn login route
 app.get("/auth/linkedin", passport.authenticate("linkedin"));
 // callback method which linkedin will hit after successfull login of user
