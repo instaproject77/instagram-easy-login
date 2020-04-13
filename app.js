@@ -18,10 +18,15 @@ let express = require("express"),
 let passport = require("passport");
 let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
 app.use(cookieParser());
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
+app.all("/*", (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 //
 app.use(
   session({
