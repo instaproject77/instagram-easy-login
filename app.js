@@ -58,7 +58,7 @@ passport.use(
     {
       clientID: process.env.LINKEDINCLIENTID,
       clientSecret: process.env.LINKEDINCLIENTSECRET,
-      callbackURL: "https://fast-tundra-53694.herokuapp.com/callback/",
+      callbackURL: "https://mysterious-reaches-98129.herokuapp.com/callback/",
       scope: ["r_emailaddress", "r_liteprofile"],
     },
     function (accessToken, refreshToken, profile, done) {
