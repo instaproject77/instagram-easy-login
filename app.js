@@ -139,37 +139,41 @@ app.post("/insta", (req, res) => {
         res.json({ success: true, user: val, cookie: val2.cookies });
       });
     })
-  ).catch(IgLoginTwoFactorRequiredError, async (err) => {
-    console.log("test2 called auth");
-    if (err.response.body.invalid_credentials) {
-      res.json({ message: "inavlid credentials", success: false });
-    }
+  ).catch(
+    IgLoginTwoFactorRequiredError,
+    IgLoginBadPasswordError,
+    async (err) => {
+      console.log("test2 called auth");
+      if (IgLoginBadPasswordError) {
+        res.json({ message: "inavlid password", success: false });
+      }
 
-    const {
-      username,
-      totp_two_factor_on,
-      two_factor_identifier,
-    } = err.response.body.two_factor_info;
+      const {
+        username,
+        totp_two_factor_on,
+        two_factor_identifier,
+      } = err.response.body.two_factor_info;
 
-    if (!two_factor_identifier) {
+      if (!two_factor_identifier) {
+        res.json({
+          message: "Unable to login, no 2fa identifier found",
+          success: false,
+        });
+        throw new Error("Unable to login, no 2fa identifier found");
+      }
+
+      const verificationMethod = totp_two_factor_on ? "0" : "1"; // default to 1 for SMS
+
+      //sending Two Factor details
       res.json({
-        message: "Unable to login, no 2fa identifier found",
-        success: false,
+        username,
+        two_factor_identifier,
+        verificationMethod,
+        success: true,
       });
-      throw new Error("Unable to login, no 2fa identifier found");
+      // Use the code to finish the login process
     }
-
-    const verificationMethod = totp_two_factor_on ? "0" : "1"; // default to 1 for SMS
-
-    //sending Two Factor details
-    res.json({
-      username,
-      two_factor_identifier,
-      verificationMethod,
-      success: true,
-    });
-    // Use the code to finish the login process
-  });
+  );
 });
 
 // Method to logout
