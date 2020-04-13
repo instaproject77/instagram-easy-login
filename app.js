@@ -23,10 +23,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
-app.all("/*", (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  next();
-});
+var corsOptions = {
+  origin: "https://fast-tundra-53694.herokuapp.com",
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+app.use(cors(corsOptions));
 //
 app.use(
   session({
