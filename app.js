@@ -142,14 +142,13 @@ app.post("/insta", (req, res) => {
   // Initiate Instagram API client
   console.log("insta login test");
   console.log(req.body);
-  console.log(req.params);
-  console.log(req.body.username, req.body.password);
+  const body = JSON.parse(req.body);
 
-  ig.state.generateDevice(req.body.username);
+  ig.state.generateDevice(body.username);
 
   return Promise.try(() =>
     ig.account
-      .login(req.body.username, req.body.password)
+      .login(body.username, body.password)
       .then((val) => {
         const cookies = ig.state.serializeCookieJar().then((val2) => {
           res.json({ success: true, user: val, cookie: val2.cookies });
