@@ -141,6 +141,8 @@ app.get("/insta/submitCode", (req, res) => {
 app.post("/insta", (req, res) => {
   // Initiate Instagram API client
   console.log("insta login test");
+  console.log(req.body);
+  console.log(req.params);
   console.log(req.body.username, req.body.password);
 
   ig.state.generateDevice(req.body.username);
