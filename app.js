@@ -8,7 +8,6 @@ const {
 } = require("instagram-private-api");
 const ig = new IgApiClient();
 var Promise = require("bluebird");
-var cors = require("cors");
 let express = require("express"),
   util = require("util"),
   session = require("express-session"),
@@ -16,7 +15,6 @@ let express = require("express"),
   bodyParser = require("body-parser"),
   router = express.Router(),
   app = express();
-app.use(cors);
 let passport = require("passport");
 var path = require("path");
 let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
