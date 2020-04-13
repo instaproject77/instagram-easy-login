@@ -19,7 +19,7 @@
   <p>Username: <%= user.username %></p>
   <p>Name :<%= user.displayName %></p>
   <p><%- session %></p>
-  <p><%- user %></p>
+  <p><%- JSON.stringify(user) %></p>
 </div>
 
 <% } %>

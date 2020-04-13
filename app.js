@@ -146,46 +146,41 @@ app.post("/insta", (req, res) => {
   ig.state.generateDevice(req.body.username);
 
   return Promise.try(() =>
-    ig.account.login(req.body.username, req.body.password).then((val) => {
-      const cookies = ig.state.serializeCookieJar().then((val2) => {
-        res.json({ success: true, user: val, cookie: val2.cookies });
-      });
-    })
-  ).catch(
-    IgLoginTwoFactorRequiredError,
-    IgLoginBadPasswordError,
-    async (err) => {
-      console.log("test2 called auth");
-      if (err) {
-        res.json({ message: "inavlid password", success: false });
-      }
-
-      const {
-        username,
-        totp_two_factor_on,
-        two_factor_identifier,
-      } = err.response.body.two_factor_info;
-
-      if (!two_factor_identifier) {
-        res.json({
-          message: "Unable to login, no 2fa identifier found",
-          success: false,
+    ig.account
+      .login(req.body.username, req.body.password)
+      .then((val) => {
+        const cookies = ig.state.serializeCookieJar().then((val2) => {
+          res.json({ success: true, user: val, cookie: val2.cookies });
         });
-        throw new Error("Unable to login, no 2fa identifier found");
-      }
-
-      const verificationMethod = totp_two_factor_on ? "0" : "1"; // default to 1 for SMS
-
-      //sending Two Factor details
+      })
+      .catch((err) => {
+        res.json({ message: "inavlid password", success: false });
+      })
+  ).catch(IgLoginTwoFactorRequiredError, async (err) => {
+    const {
+      username,
+      totp_two_factor_on,
+      two_factor_identifier,
+    } = err.response.body.two_factor_info;
+    if (!two_factor_identifier) {
       res.json({
-        username,
-        two_factor_identifier,
-        verificationMethod,
-        success: true,
+        message: "Unable to login, no 2fa identifier found",
+        success: false,
       });
-      // Use the code to finish the login process
+      throw new Error("Unable to login, no 2fa identifier found");
     }
-  );
+
+    const verificationMethod = totp_two_factor_on ? "0" : "1"; // default to 1 for SMS
+
+    //sending Two Factor details
+    res.json({
+      username,
+      two_factor_identifier,
+      verificationMethod,
+      success: true,
+    });
+    // Use the code to finish the login process
+  });
 });
 
 // Method to logout
