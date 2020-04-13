@@ -8,7 +8,7 @@ const {
 } = require("instagram-private-api");
 const ig = new IgApiClient();
 var Promise = require("bluebird");
-var cors = require("cors");
+
 let express = require("express"),
   util = require("util"),
   session = require("express-session"),
@@ -16,7 +16,6 @@ let express = require("express"),
   bodyParser = require("body-parser"),
   router = express.Router(),
   app = express();
-app.use(cors());
 let passport = require("passport");
 let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
 app.use(cookieParser());
@@ -24,7 +23,12 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
-app.use(express.static(__dirname + "/public"));
+
+app.use(express.static(path.join(__dirname, "build")));
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 //
 app.use(
@@ -36,7 +40,7 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.listen(process.env.PORT || 3000, function () {
+app.listen(process.env.PORT || 4000, function () {
   console.log("server running on port:3000");
 });
 
@@ -70,12 +74,12 @@ passport.use(
 );
 
 //LinkedIn login route
-app.get("/auth/linkedin", passport.authenticate("linkedin"));
+app.get("/linkedin", passport.authenticate("linkedin"));
 // callback method which linkedin will hit after successfull login of user
 app.get(
   "/callback/",
   passport.authenticate("linkedin", {
-    failureRedirect: "/auth/linkedin",
+    failureRedirect: "/linkedin",
     successRedirect: "/",
   }),
   (req, res) => {
@@ -87,7 +91,7 @@ app.get(
 app.get("/", function (req, res) {
   res.send("<h1>Welcome</h1>");
 });
-app.get("/auth/insta/submitCode", (req, res) => {
+app.get("/insta/submitCode", (req, res) => {
   ig.request.end$.subscribe(async () => {
     const cookies = await ig.state.serializeCookieJar();
     const state = {
@@ -123,7 +127,7 @@ app.get("/auth/insta/submitCode", (req, res) => {
     });
 });
 
-app.post("/auth/insta", (req, res) => {
+app.post("/insta", (req, res) => {
   // Initiate Instagram API client
 
   ig.state.generateDevice(req.body.username);
