@@ -15,10 +15,15 @@ let express = require("express"),
   bodyParser = require("body-parser"),
   router = express.Router(),
   app = express();
+
 let passport = require("passport");
 let cors = require("cors");
 var path = require("path");
 let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
+app.listen(process.env.PORT || 4000, function () {
+  console.log("server running on port:4000");
+});
+
 app.options("*", cors());
 app.use(cors());
 const { createProxyMiddleware } = require("http-proxy-middleware");
@@ -51,9 +56,6 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.listen(process.env.PORT || 4000, function () {
-  console.log("server running on port:4000");
-});
 
 passport.serializeUser(function (user, done) {
   done(null, user);
