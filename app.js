@@ -20,6 +20,8 @@ let passport = require("passport");
 let cors = require("cors");
 var path = require("path");
 let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
+app.set("views".__dirname + "/views");
+app.set("view-engine", "ejs");
 app.listen(process.env.PORT || 4000, function () {
   console.log("server running on port:4000");
 });
@@ -68,6 +70,7 @@ passport.use(
         // represent the logged-in user. In a typical application, you would want
         // to associate the LinkedIn account with a user record in your database,
         // and return that user instead.
+
         return done(null, profile);
       });
     }
@@ -80,15 +83,22 @@ app.get("/linkedin", passport.authenticate("linkedin"));
 app.get(
   "/callback/",
   passport.authenticate("linkedin", {
-    failureRedirect: "/linkedin",
-    successRedirect: "/",
+    failureRedirect: "/",
+    successRedirect: "/linkedin/profile",
   }),
-  (req, res) => {
-    res.json({ session: req.session, user: req.user, cookie: req.cookie });
-  }
+  (req, res) => {}
 );
-
+app.get("/linkedin/profile", function (req, res) {
+  res.render("index", {
+    user: req.user,
+    cookie: req.cookies,
+    session: req.session,
+  });
+});
 // method to load index.ejs file on base path
+app.get("/", function (req, res) {
+  res.send("<h1>Welcome</h1>");
+});
 app.get("/", function (req, res) {
   res.send("<h1>Welcome</h1>");
 });
@@ -131,6 +141,8 @@ app.get("/insta/submitCode", (req, res) => {
 app.post("/insta", (req, res) => {
   // Initiate Instagram API client
   console.log("insta login test");
+  console.log(req.body.username, req.body.password);
+
   ig.state.generateDevice(req.body.username);
 
   return Promise.try(() =>
@@ -144,7 +156,7 @@ app.post("/insta", (req, res) => {
     IgLoginBadPasswordError,
     async (err) => {
       console.log("test2 called auth");
-      if (IgLoginBadPasswordError) {
+      if (err) {
         res.json({ message: "inavlid password", success: false });
       }
 
