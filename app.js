@@ -29,8 +29,8 @@ app.listen(process.env.PORT || 4000, function () {
 app.options("*", cors());
 app.use(cors());
 app.use(cookieParser());
-
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json()); // handle json data
+app.use(bodyParser.urlencoded({ extended: true })); // handle URL-encoded data
 app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 
