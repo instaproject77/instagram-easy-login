@@ -89,11 +89,11 @@ app.get(
   (req, res) => {}
 );
 app.get("/linkedin/profile", function (req, res) {
-  console.log(req.session.cookie);
+  console.log(req.signedCookies);
   console.log(req.session.id);
   res.render("index", {
     user: req.user,
-    cookie: req.session.cookie,
+    cookie: req.signedCookies,
     session: req.session.id,
   });
 });
