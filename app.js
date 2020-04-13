@@ -17,6 +17,7 @@ let express = require("express"),
   router = express.Router(),
   app = express();
 let passport = require("passport");
+var path = require("path");
 let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
 app.use(cookieParser());
 
@@ -41,7 +42,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.listen(process.env.PORT || 4000, function () {
-  console.log("server running on port:3000");
+  console.log("server running on port:4000");
 });
 
 passport.serializeUser(function (user, done) {
