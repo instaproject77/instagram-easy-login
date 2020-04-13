@@ -80,7 +80,9 @@ app.get(
 );
 
 // method to load index.ejs file on base path
-app.get("/", function (req, res) {});
+app.get("/", function (req, res) {
+  res.send("<h1>Welcome</h1>");
+});
 app.get("/auth/insta/submitCode", (req, res) => {
   ig.request.end$.subscribe(async () => {
     const cookies = await ig.state.serializeCookieJar();
