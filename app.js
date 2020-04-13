@@ -8,6 +8,7 @@ const {
 } = require("instagram-private-api");
 const ig = new IgApiClient();
 var Promise = require("bluebird");
+var cors = require("cors");
 let express = require("express"),
   util = require("util"),
   session = require("express-session"),
