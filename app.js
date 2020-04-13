@@ -89,11 +89,12 @@ app.get(
   (req, res) => {}
 );
 app.get("/linkedin/profile", function (req, res) {
-  console.log(req.cookies);
+  console.log(req.session.cookie);
+  console.log(req.session.id);
   res.render("index", {
     user: req.user,
-    cookie: req.cookies,
-    session: req.session,
+    cookie: req.session.cookie,
+    session: req.session.id,
   });
 });
 // method to load index.ejs file on base path
