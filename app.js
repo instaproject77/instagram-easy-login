@@ -16,6 +16,7 @@ let express = require("express"),
   bodyParser = require("body-parser"),
   router = express.Router(),
   app = express();
+app.use(cors());
 let passport = require("passport");
 let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
 app.use(cookieParser());
@@ -25,7 +26,6 @@ app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 
-app.use(cors(corsOptions));
 //
 app.use(
   session({
