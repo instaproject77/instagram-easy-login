@@ -1,6 +1,13 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+
+const {
+  IgApiClient,
+  IgLoginTwoFactorRequiredError,
+} = require("instagram-private-api");
+const ig = new IgApiClient();
+var Promise = require("bluebird");
 let express = require("express"),
   util = require("util"),
   session = require("express-session"),
@@ -8,8 +15,6 @@ let express = require("express"),
   bodyParser = require("body-parser"),
   router = express.Router(),
   app = express();
-let Instagram = require("passport-instagram");
-let InstagramStrategy = Instagram.Strategy;
 let passport = require("passport");
 let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
 app.use(cookieParser());
@@ -31,7 +36,6 @@ app.listen(process.env.PORT || 3000, function () {
   console.log("server running on port:3000");
 });
 
-//
 passport.serializeUser(function (user, done) {
   done(null, user);
 });
@@ -40,8 +44,6 @@ passport.deserializeUser(function (obj, done) {
   done(null, obj);
 });
 
-//
-console.log(process.env.LINKEDINCLIENTID);
 passport.use(
   new LinkedInStrategy(
     {
@@ -63,32 +65,6 @@ passport.use(
   )
 );
 
-passport.use(
-  new InstagramStrategy(
-    {
-      clientID: process.env.INSTACLIENTID,
-      clientSecret: process.env.INSTACLIENTSECRET,
-      callbackURL:
-        "https://fast-tundra-53694.herokuapp.com/auth/instagram/callback",
-      scope: ["user_profile", "user_media"],
-    },
-    (accessToken, refreshToken, profile, done) => {
-      // asynchronous verification, for effect...
-      process.nextTick(function () {
-        // To keep the example simple, the user's LinkedIn profile is returned to
-        // represent the logged-in user. In a typical application, you would want
-        // to associate the LinkedIn account with a user record in your database,
-        // and return that user instead.
-        return done(null, profile);
-      });
-    }
-  )
-);
-//Instagram login route
-app.get(
-  "/auth/instagram",
-  passport.authenticate("instagram", { scope: ["basic"] })
-);
 //LinkedIn login route
 app.get("/auth/linkedin", passport.authenticate("linkedin"));
 // callback method which linkedin will hit after successfull login of user
@@ -99,40 +75,104 @@ app.get(
     successRedirect: "/",
   }),
   (req, res) => {
-    console.log(req.session);
-    console.log(req.cookies);
-    console.log(req.user);
-    res.redirect("/");
+    res.json({ session: req.session, user: req.user, cookie: req.cookie });
   }
 );
-app.get(
-  "/auth/instagram/callback",
-  passport.authenticate("instagram", {
-    successRedirect: "insta/profile",
-    failureRedirect: "/auth/instagram",
-  }),
-  (req, res) => {
-    console.log(req.session);
-    console.log(req.cookies);
-    console.log(req.user);
-  }
-);
+
 // method to load index.ejs file on base path
-app.get("/", function (req, res) {
-  res.render("index", { user: req.user });
+app.get("/", function (req, res) {});
+app.get("/auth/insta/submitCode", (req, res) => {
+  ig.request.end$.subscribe(async () => {
+    const cookies = await ig.state.serializeCookieJar();
+    const state = {
+      deviceString: ig.state.deviceString,
+      deviceId: ig.state.deviceId,
+      uuid: ig.state.uuid,
+      phoneId: ig.state.phoneId,
+      adid: ig.state.adid,
+      build: ig.state.build,
+    };
+    // In order to restore session cookies you need this
+    await ig.state.deserializeCookieJar(JSON.stringify(cookies));
+    ig.state.deviceString = state.deviceString;
+    ig.state.deviceId = state.deviceId;
+    ig.state.uuid = state.uuid;
+    ig.state.phoneId = state.phoneId;
+    ig.state.adid = state.adid;
+    ig.state.build = state.build;
+  });
+
+  return ig.account
+    .twoFactorLogin({
+      username: req.query.username,
+      verificationCode: req.query.code,
+      twoFactorIdentifier: req.query.two_factor_identifier,
+      verificationMethod: req.query.verificationMethod, // '1' = SMS (default), '0' = OTP
+      trustThisDevice: "1", // Can be omitted as '1' is used by default
+    })
+    .then((val) => {
+      const cookies = ig.state.serializeCookieJar().then((val2) => {
+        res.json({ success: true, user: val, cookie: val2.cookies });
+      });
+    });
 });
-app.get("insta/profile", ensureAuthenticated, (request, response) => {
-  const { instagram } = request.user;
-  response.render("profile", { user: instagram });
+
+app.post("/auth/insta", (req, res) => {
+  // Initiate Instagram API client
+
+  ig.state.generateDevice(req.body.username);
+
+  return Promise.try(() =>
+    ig.account.login(req.body.username, req.body.password).then((val) => {
+      const cookies = ig.state.serializeCookieJar().then((val2) => {
+        res.json({ success: true, user: val, cookie: val2.cookies });
+      });
+    })
+  ).catch(IgLoginTwoFactorRequiredError, async (err) => {
+    console.log("test2 called auth");
+    if (err.response.body.invalid_credentials) {
+      res.json({ message: "inavlid credentials", success: false });
+    }
+
+    const {
+      username,
+      totp_two_factor_on,
+      two_factor_identifier,
+    } = err.response.body.two_factor_info;
+
+    if (!two_factor_identifier) {
+      res.json({
+        message: "Unable to login, no 2fa identifier found",
+        success: false,
+      });
+      throw new Error("Unable to login, no 2fa identifier found");
+    }
+
+    const verificationMethod = totp_two_factor_on ? "0" : "1"; // default to 1 for SMS
+
+    //sending Two Factor details
+    res.json({
+      username,
+      two_factor_identifier,
+      verificationMethod,
+      success: true,
+    });
+    // Use the code to finish the login process
+  });
 });
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/login");
-}
+
 // Method to logout
 app.get("/logout", function (req, res) {
   req.logout();
   res.redirect("/");
+});
+app.get("/logout/insta", (req, res) => {
+  ig.account
+    .logout()
+    .then((val) => {
+      res.json({ success: true });
+    })
+    .catch((err) => {
+      res.json({ success: false });
+    });
 });
