@@ -21,6 +21,18 @@ var path = require("path");
 let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
 app.options("*", cors());
 app.use(cors());
+const { createProxyMiddleware } = require("http-proxy-middleware");
+app.use(
+  "/linkedin",
+  createProxyMiddleware({
+    target: "https://mysterious-reaches-98129.herokuapp.com/linkedin", //original url
+    changeOrigin: true,
+    //secure: false,
+    onProxyRes: function (proxyRes, req, res) {
+      proxyRes.headers["Access-Control-Allow-Origin"] = "*";
+    },
+  })
+);
 app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({ extended: false }));
