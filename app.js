@@ -91,8 +91,10 @@ app.get(
     successRedirect: "/linkedin/profile",
   }),
   (req, res) => {
+    console.log(cookie);
     console.log(res.cookie);
     console.log(req.cookies);
+    res.redirect("/linkedin/profile");
   }
 );
 //profile of linkedin user
