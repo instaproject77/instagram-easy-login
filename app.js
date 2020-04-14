@@ -156,6 +156,7 @@ app.get("/insta/submitCode", (req, res) => {
       });
     })
     .catch((IgChallengeWrongCodeError) => {
+      console.log(IgChallengeWrongCodeError);
       res.json({ success: false, message: "code incorrect!" });
     });
 });
@@ -184,31 +185,40 @@ app.post("/insta", (req, res) => {
     IgLoginBadPasswordError,
     IgLoginInvalidUserError,
     async (err) => {
-      console.log(err);
-      const {
-        username,
-        totp_two_factor_on,
-        two_factor_identifier,
-      } = err.response.body.two_factor_info;
-      if (!two_factor_identifier) {
-        res.json({
-          message: "Unable to login, no 2fa identifier found",
-          success: false,
-        });
-        throw new Error("Unable to login, no 2fa identifier found");
+      if (IgLoginBadPasswordError) {
+        res.json({ success: false, message: "invalid password" });
+        res.end;
+      } else if (IgLoginInvalidUserError) {
+        res.json({ success: false, message: "invalid username" });
+        res.end;
+      } else {
+        const {
+          username,
+          totp_two_factor_on,
+          two_factor_identifier,
+        } = err.response.body.two_factor_info;
+        if (!two_factor_identifier) {
+          res.json({
+            message: "Unable to login, no 2fa identifier found",
+            success: false,
+          });
+          throw new Error("Unable to login, no 2fa identifier found");
+        }
+
+        const verificationMethod = totp_two_factor_on ? "0" : "1"; // default to 1 for SMS
+
+        res //sending Two Factor details
+          .json({
+            username,
+            two_factor_identifier,
+            verificationMethod,
+            success: true,
+            twoFactor: true,
+            message: "code sent",
+          });
+        res.end;
       }
 
-      const verificationMethod = totp_two_factor_on ? "0" : "1"; // default to 1 for SMS
-
-      res //sending Two Factor details
-        .json({
-          username,
-          two_factor_identifier,
-          verificationMethod,
-          success: true,
-          twoFactor: true,
-          message: "code sent",
-        });
       // Use the code to finish the login process
     }
   );
