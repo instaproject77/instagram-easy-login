@@ -5,6 +5,9 @@ if (process.env.NODE_ENV !== "production") {
 const {
   IgApiClient,
   IgLoginTwoFactorRequiredError,
+  IgLoginBadPasswordError,
+  IgLoginInvalidUserError,
+  IgChallengeWrongCodeError,
 } = require("instagram-private-api");
 const ig = new IgApiClient();
 var Promise = require("bluebird");
@@ -144,12 +147,16 @@ app.get("/insta/submitCode", (req, res) => {
     })
     .then((val) => {
       const cookies = ig.state.serializeCookieJar().then((val2) => {
-        res.json({ success: true, user: val, cookie: val2.cookies });
+        res.json({
+          success: true,
+          user: val,
+          cookie: val2.cookies,
+          message: "login Successful",
+        });
       });
     })
-    .catch((err) => {
-      console.log(err);
-      res.json({ success: false, message: "" });
+    .catch((IgChallengeWrongCodeError) => {
+      res.json({ success: false, message: "code incorrect!" });
     });
 });
 
@@ -175,35 +182,46 @@ app.post("/insta", (req, res) => {
         });
       })
       .catch((err) => {
+        console.log(err);
         res.json({ message: "inavlid password", success: false });
       })
-  ).catch(IgLoginTwoFactorRequiredError, async (err) => {
-    const {
-      username,
-      totp_two_factor_on,
-      two_factor_identifier,
-    } = err.response.body.two_factor_info;
-    if (!two_factor_identifier) {
-      res.json({
-        message: "Unable to login, no 2fa identifier found",
-        success: false,
-      });
-      throw new Error("Unable to login, no 2fa identifier found");
+  ).catch(
+    IgLoginTwoFactorRequiredError,
+    IgLoginBadPasswordError,
+    IgLoginInvalidUserError,
+    async (err) => {
+      if (IgLoginBadPasswordError) {
+        res.json({ message: "inavlid password", success: false });
+      }
+      if (IgLoginInvalidUserError) {
+        res.json({ message: "inavlid username", success: false });
+      }
+      const {
+        username,
+        totp_two_factor_on,
+        two_factor_identifier,
+      } = err.response.body.two_factor_info;
+      if (!two_factor_identifier) {
+        res.json({
+          message: "Unable to login, no 2fa identifier found",
+          success: false,
+        });
+        throw new Error("Unable to login, no 2fa identifier found");
+      }
+
+      const verificationMethod = totp_two_factor_on ? "0" : "1"; // default to 1 for SMS
+      username.res //sending Two Factor details
+        .json({
+          username,
+          two_factor_identifier,
+          verificationMethod,
+          success: true,
+          twoFactor: true,
+          message: "code sent",
+        });
+      // Use the code to finish the login process
     }
-
-    const verificationMethod = totp_two_factor_on ? "0" : "1"; // default to 1 for SMS
-
-    //sending Two Factor details
-    res.json({
-      username,
-      two_factor_identifier,
-      verificationMethod,
-      success: true,
-      twoFactor: true,
-      message: "code sent",
-    });
-    // Use the code to finish the login process
-  });
+  );
 });
 
 // Method to logout
@@ -215,6 +233,8 @@ app.get("/logout/insta", (req, res) => {
   ig.account
     .logout()
     .then((val) => {
+      console.log("logout");
+      console.log(val);
       res.json({ success: true });
     })
     .catch((err) => {
