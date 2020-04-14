@@ -184,12 +184,6 @@ app.post("/insta", (req, res) => {
     IgLoginBadPasswordError,
     IgLoginInvalidUserError,
     async (err) => {
-      if (IgLoginBadPasswordError) {
-        res.json({ message: "inavlid password", success: false });
-      }
-      if (IgLoginInvalidUserError) {
-        res.json({ message: "inavlid username", success: false });
-      }
       const {
         username,
         totp_two_factor_on,
@@ -204,7 +198,8 @@ app.post("/insta", (req, res) => {
       }
 
       const verificationMethod = totp_two_factor_on ? "0" : "1"; // default to 1 for SMS
-      username.res //sending Two Factor details
+
+      res //sending Two Factor details
         .json({
           username,
           two_factor_identifier,
