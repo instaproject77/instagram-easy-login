@@ -184,6 +184,7 @@ app.post("/insta", (req, res) => {
     IgLoginBadPasswordError,
     IgLoginInvalidUserError,
     async (err) => {
+      console.log(err);
       const {
         username,
         totp_two_factor_on,
