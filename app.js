@@ -187,7 +187,7 @@ app.post("/insta", (req, res) => {
     async (err) => {
       console.log(err.text);
       console.log(err.name);
-      console.log(err);
+      console.log(err.response);
 
       console.log((err.response.body.error_type = "bad_password"));
       if (err.response.body.error_type === "bad_password") {
