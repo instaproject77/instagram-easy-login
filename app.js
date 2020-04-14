@@ -168,23 +168,17 @@ app.post("/insta", (req, res) => {
   ig.state.generateDevice(req.body.username);
 
   return Promise.try(() =>
-    ig.account
-      .login(req.body.username, req.body.password)
-      .then((val) => {
-        const cookies = ig.state.serializeCookieJar().then((val2) => {
-          res.json({
-            success: true,
-            twoFactor: false,
-            user: val,
-            cookie: val2.cookies,
-            message: "login Successful",
-          });
+    ig.account.login(req.body.username, req.body.password).then((val) => {
+      const cookies = ig.state.serializeCookieJar().then((val2) => {
+        res.json({
+          success: true,
+          twoFactor: false,
+          user: val,
+          cookie: val2.cookies,
+          message: "login Successful",
         });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.json({ message: "inavlid password", success: false });
-      })
+      });
+    })
   ).catch(
     IgLoginTwoFactorRequiredError,
     IgLoginBadPasswordError,
