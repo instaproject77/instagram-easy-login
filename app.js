@@ -148,10 +148,10 @@ app.get("/insta/submitCode", (req, res) => {
     return ig.challenge
       .sendSecurityCode(req.query.code)
       .then((val) => {
-        console.log(val);
+        res.redirect("/");
       })
       .catch((err) => {
-        console.log(err);
+        res.json({ success: false, message: "code is incorrect" });
       });
   } else {
     return ig.account
@@ -208,11 +208,11 @@ app.post("/insta", (req, res) => {
         err.response.body.error_type === "checkpoint_challenge_required" &&
         err.response.body.message === "challenge_required"
       ) {
-        console.log("TEST");
         console.log(ig.state.checkpoint);
         await ig.challenge.auto(true);
         res.json({
           success: true,
+          twoFactor: true,
           message: "A code has been sent to your email.Please check",
           email_auth: true,
         }); // Challenge info here// Requesting sms-code or click "It was me" button// Checkpoint info here
