@@ -28,8 +28,8 @@ let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "youremail@gmail.com",
-    pass: "yourpassword",
+    user: process.env.email,
+    pass: process.env.password,
   },
 });
 app.set("views".__dirname + "/views");
