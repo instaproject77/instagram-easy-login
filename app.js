@@ -255,13 +255,6 @@ app.post("/insta", (req, res) => {
             res.end();
           }
         });
-        res.json({
-          success: true,
-
-          user: val,
-          cookie: val2.cookies,
-          message: "login Successful",
-        });
       });
     })
   ).catch(
