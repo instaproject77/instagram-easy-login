@@ -19,7 +19,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "http-proxy-middleware": "^1.0.3",
-    "instagram-private-api": "^1.39.2",
+    "instagram-private-api": "github:huttarichard/instagram-private-api",
     "nodemon": "^2.0.3",
     "passport": "^0.4.1",
     "passport-linkedin-oauth2": "^2.0.0"

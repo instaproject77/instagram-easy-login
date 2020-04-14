@@ -7,8 +7,9 @@ const {
   IgLoginTwoFactorRequiredError,
   IgLoginBadPasswordError,
   IgLoginInvalidUserError,
-  IgChallengeWrongCodeError,
+  IgCheckpointError,
 } = require("instagram-private-api");
+
 const ig = new IgApiClient();
 var Promise = require("bluebird");
 let express = require("express"),
@@ -190,9 +191,9 @@ app.post("/insta", (req, res) => {
     IgLoginTwoFactorRequiredError,
     IgLoginBadPasswordError,
     IgLoginInvalidUserError,
+    IgCheckpointError,
     async (err) => {
       console.log(err.response);
-
       if (
         err.response.body.error_type === "bad_password" &&
         err.response.body.two_factor_info === undefined
