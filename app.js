@@ -189,8 +189,10 @@ app.post("/insta", (req, res) => {
       console.log(err.name);
       console.log(err.response);
 
-      console.log((err.response.body.error_type = "bad_password"));
-      if (err.response.body.error_type === "bad_password") {
+      if (
+        err.response.body.error_type === "bad_password" &&
+        err.response.body.two_factor_required === false
+      ) {
         res.json({ success: false, message: "invalid password" });
         res.end;
       } else if (err.response.body.error_type === "invalid_user") {
