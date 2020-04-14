@@ -149,6 +149,7 @@ app.get("/insta/submitCode", (req, res) => {
       .sendSecurityCode(req.query.code)
       .then((val) => {
         res.redirect("/");
+        res.end;
       })
       .catch((err) => {
         console.log(err);
@@ -171,6 +172,7 @@ app.get("/insta/submitCode", (req, res) => {
             cookie: val2.cookies,
             message: "login Successful",
           });
+          res.end;
         });
       })
       .catch((IgChallengeWrongCodeError) => {
