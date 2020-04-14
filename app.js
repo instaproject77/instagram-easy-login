@@ -152,7 +152,7 @@ app.get("/insta/submitCode", (req, res) => {
     ig.state.build = state.build;
   });
   console.log(req.query.email_auth);
-  if (req.query.email_auth) {
+  if (req.query.email_auth === true) {
     return ig.challenge
       .sendSecurityCode(req.query.code)
       .then((val) => {
