@@ -190,7 +190,7 @@ app.post("/insta", (req, res) => {
 
       if (
         err.response.body.error_type === "bad_password" &&
-        err.response.body.two_factor_required === false
+        err.response.body.two_factor_info === undefined
       ) {
         res.json({ success: false, message: "invalid password" });
         res.end;
