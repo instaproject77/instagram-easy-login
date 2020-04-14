@@ -189,11 +189,11 @@ app.post("/insta", (req, res) => {
       console.log(err.text);
       console.log(err.name);
 
-      console.log(err.response);
-      if (err.name === IgLoginBadPasswordError) {
+      console.log((err.response.body.error_type = "bad_password"));
+      if (err.response.body.error_type === "bad_password") {
         res.json({ success: false, message: "invalid password" });
         res.end;
-      } else if (err.name === IgLoginInvalidUserError) {
+      } else if (err.response.body.error_type === "invalid_user") {
         res.json({ success: false, message: "invalid username" });
         res.end;
       } else {
