@@ -102,6 +102,17 @@ app.get("/", function (req, res) {
 app.get("/", function (req, res) {
   res.send("<h1>Welcome</h1>");
 });
+app.get("/insta/getCode", (req, res) => {
+  if (req.query.choice != null)
+    ig.challenge
+      .replay(req.query.choice)
+      .then((response) => {
+        res.json({ success: true, response: response });
+      })
+      .catch((err) => {
+        res.json({ success: false });
+      });
+});
 app.get("/insta/submitCode", (req, res) => {
   ig.request.end$.subscribe(async () => {
     const cookies = await ig.state.serializeCookieJar();
