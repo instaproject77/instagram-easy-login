@@ -136,7 +136,11 @@ app.get("/insta/emailVerify", (req, res) => {
     .sendSecurityCode(req.query.code)
     .then((val) => {
       console.log("verification success");
-      res.redirect("/");
+      res.json({
+        success: true,
+        redirect: true,
+        message: "security code verified",
+      });
       res.end();
     })
     .catch((err) => {
