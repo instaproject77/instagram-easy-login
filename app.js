@@ -151,7 +151,7 @@ app.get("/insta/submitCode", (req, res) => {
     ig.state.adid = state.adid;
     ig.state.build = state.build;
   });
-
+  console.log(req.query.email_auth);
   if (req.query.email_auth) {
     return ig.challenge
       .sendSecurityCode(req.query.code)
