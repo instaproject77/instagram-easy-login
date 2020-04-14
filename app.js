@@ -151,6 +151,7 @@ app.get("/insta/submitCode", (req, res) => {
         res.redirect("/");
       })
       .catch((err) => {
+        console.log(err);
         res.json({ success: false, message: "code is incorrect" });
       });
   } else {
