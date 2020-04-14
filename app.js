@@ -146,6 +146,10 @@ app.get("/insta/submitCode", (req, res) => {
       const cookies = ig.state.serializeCookieJar().then((val2) => {
         res.json({ success: true, user: val, cookie: val2.cookies });
       });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({ success: false, message: "" });
     });
 });
 
@@ -161,7 +165,13 @@ app.post("/insta", (req, res) => {
       .login(req.body.username, req.body.password)
       .then((val) => {
         const cookies = ig.state.serializeCookieJar().then((val2) => {
-          res.json({ success: true, user: val, cookie: val2.cookies });
+          res.json({
+            success: true,
+            twoFactor: false,
+            user: val,
+            cookie: val2.cookies,
+            message: "login Successful",
+          });
         });
       })
       .catch((err) => {
@@ -189,6 +199,8 @@ app.post("/insta", (req, res) => {
       two_factor_identifier,
       verificationMethod,
       success: true,
+      twoFactor: true,
+      message: "code sent",
     });
     // Use the code to finish the login process
   });
