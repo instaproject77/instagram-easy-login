@@ -195,6 +195,14 @@ app.post("/insta", (req, res) => {
     async (err) => {
       console.log(err.response);
       if (
+        err.response.body.error_type === "checkpoint_challenge_required" &&
+        err.response.body.message === "challenge_required"
+      ) {
+        console.log(ig.state.checkpoint);
+        await ig.challenge.auto(true);
+        console.log(ig.state.checkpoint); // Challenge info here// Requesting sms-code or click "It was me" button// Checkpoint info here
+      }
+      if (
         err.response.body.error_type === "bad_password" &&
         err.response.body.two_factor_info === undefined
       ) {
