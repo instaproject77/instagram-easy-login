@@ -207,6 +207,7 @@ app.post("/insta", (req, res) => {
     IgLoginInvalidUserError,
     IgCheckpointError,
     async (err) => {
+      console.log(err.response);
       if (
         err.response.body.error_type === "checkpoint_challenge_required" &&
         err.response.body.message === "challenge_required"
