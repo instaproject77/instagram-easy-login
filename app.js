@@ -148,7 +148,7 @@ app.get("/insta/submitCode", (req, res) => {
     return ig.challenge
       .sendSecurityCode(req.query.code)
       .then((val) => {
-        console.log(success);
+        console.log("success");
         console.log(val);
       })
       .catch((err) => {
