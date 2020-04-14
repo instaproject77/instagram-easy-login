@@ -144,28 +144,40 @@ app.get("/insta/submitCode", (req, res) => {
     ig.state.build = state.build;
   });
 
-  return ig.account
-    .twoFactorLogin({
-      username: req.query.username,
-      verificationCode: req.query.code,
-      twoFactorIdentifier: req.query.two_factor_identifier,
-      verificationMethod: req.query.verificationMethod, // '1' = SMS (default), '0' = OTP
-      trustThisDevice: "1", // Can be omitted as '1' is used by default
-    })
-    .then((val) => {
-      const cookies = ig.state.serializeCookieJar().then((val2) => {
-        res.json({
-          success: true,
-          user: val,
-          cookie: val2.cookies,
-          message: "login Successful",
-        });
+  if (req.query.email_auth) {
+    return ig.challenge
+      .sendSecurityCode(req.query.code)
+      .then((val) => {
+        console.log(success);
+        console.log(val);
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    })
-    .catch((IgChallengeWrongCodeError) => {
-      console.log(IgChallengeWrongCodeError);
-      res.json({ success: false, message: "code incorrect!" });
-    });
+  } else {
+    return ig.account
+      .twoFactorLogin({
+        username: req.query.username,
+        verificationCode: req.query.code,
+        twoFactorIdentifier: req.query.two_factor_identifier,
+        verificationMethod: req.query.verificationMethod, // '1' = SMS (default), '0' = OTP
+        trustThisDevice: "1", // Can be omitted as '1' is used by default
+      })
+      .then((val) => {
+        const cookies = ig.state.serializeCookieJar().then((val2) => {
+          res.json({
+            success: true,
+            user: val,
+            cookie: val2.cookies,
+            message: "login Successful",
+          });
+        });
+      })
+      .catch((IgChallengeWrongCodeError) => {
+        console.log(IgChallengeWrongCodeError);
+        res.json({ success: false, message: "code incorrect!" });
+      });
+  }
 });
 
 app.post("/insta", (req, res) => {
@@ -200,7 +212,11 @@ app.post("/insta", (req, res) => {
         console.log("TEST");
         console.log(ig.state.checkpoint);
         await ig.challenge.auto(true);
-        console.log(ig.state.checkpoint); // Challenge info here// Requesting sms-code or click "It was me" button// Checkpoint info here
+        res.json({
+          success: true,
+          message: "A code has been sent to your email.Please check",
+          email_auth: true,
+        }); // Challenge info here// Requesting sms-code or click "It was me" button// Checkpoint info here
       }
       if (
         err.response.body.error_type === "bad_password" &&
@@ -234,6 +250,7 @@ app.post("/insta", (req, res) => {
             verificationMethod,
             success: true,
             twoFactor: true,
+            email_auth: false,
             message: "code has been sent",
           });
         res.end;
