@@ -140,7 +140,7 @@ app.get("/insta/emailVerify", (req, res) => {
       res.json({
         success: true,
         redirect: true,
-        message: "security code verified",
+        message: "Security code verified.Please login again to continue",
       });
       res.end();
     })
