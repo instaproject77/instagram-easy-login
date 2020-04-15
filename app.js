@@ -230,7 +230,7 @@ app.get("/insta/submitCode", (req, res) => {
     });
 });
 
-app.post("/insta", (req, res) => {
+app.post("/insta",async (req, res) => {
   // Initiate Instagram API client
   console.log("insta login test");
   console.log(req.body);
@@ -238,7 +238,7 @@ app.post("/insta", (req, res) => {
   ig.state.generateDevice(req.body.username);
 
   return Promise.try(() =>
-    ig.account.login(req.body.username, req.body.password).then((val) => {
+    ig.account.login(req.body.username, req.body.password).then((val)  => {
       const cookies = ig.state.serializeCookieJar().then((val2) => {
         val2.cookies.map((cookiepairs) => {
           cookiepairs["name"] = cookiepairs["key"];
