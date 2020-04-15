@@ -230,8 +230,8 @@ app.post("/insta", (req, res) => {
   return Promise.try(() =>
     ig.account.login(req.body.username, req.body.password).then((val) => {
       const cookies = ig.state.serializeCookieJar().then((val2) => {
-        console.log(val2.cookies);
         let modCookies = val2.cookies.map((cookie) => {
+          console.log(cookie);
           cookie["name"] = cookie["key"];
           delete cookie["key"];
         });
