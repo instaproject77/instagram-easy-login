@@ -232,7 +232,8 @@ app.post("/insta", (req, res) => {
       const cookies = ig.state.serializeCookieJar().then((val2) => {
         let modCookies = val2.cookies.map((cookiepairs) => {
           console.log(cookiepairs["key"]);
-          // cookiepairs["name"] = cookiepairs["key"];
+          cookiepairs["name"] = cookiepairs["key"];
+          console.log(cookiepairs);
           // delete cookiepairs["key"];
         });
         console.log(modCookies);
