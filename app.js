@@ -432,3 +432,4 @@ app.get("/logout/insta", (req, res) => {
       res.json({ success: false });
     });
 });
+app.use("*", res.sendFile(path.join(__dirname, "build", "index.html")));
