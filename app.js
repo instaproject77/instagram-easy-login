@@ -21,11 +21,8 @@ let express = require("express"),
   bodyParser = require("body-parser"),
   router = express.Router(),
   app = express();
-
-let passport = require("passport");
 let cors = require("cors");
 var path = require("path");
-let LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -49,72 +46,6 @@ app.set("view engine", "ejs");
 
 app.use(express.static(path.join(__dirname, "build")));
 
-//
-app.use(
-  session({
-    secret: process.env.SESSIONSECRET,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.serializeUser(function (user, done) {
-  done(null, user);
-});
-
-passport.deserializeUser(function (obj, done) {
-  done(null, obj);
-});
-
-passport.use(
-  new LinkedInStrategy(
-    {
-      clientID: process.env.LINKEDINCLIENTID,
-      clientSecret: process.env.LINKEDINCLIENTSECRET,
-      callbackURL: "https://mysterious-reaches-98129.herokuapp.com/callback/",
-      scope: ["r_emailaddress", "r_liteprofile"],
-    },
-    function (accessToken, refreshToken, profile, done) {
-      // asynchronous verification, for effect...
-      process.nextTick(function () {
-        // To keep the example simple, the user's LinkedIn profile is returned to
-        // represent the logged-in user. In a typical application, you would want
-        // to associate the LinkedIn account with a user record in your database,
-        // and return that user instead.
-        profile["accessToken"] = accessToken;
-        profile["refreshToken"] = refreshToken;
-        return done(null, profile);
-      });
-    }
-  )
-);
-
-//LinkedIn login route
-app.get("/linkedin", passport.authenticate("linkedin"));
-// callback method which linkedin will hit after successfull login of user
-app.get(
-  "/callback/",
-  passport.authenticate("linkedin", {
-    failureRedirect: "/",
-    successRedirect: "/linkedin/profile",
-  }),
-  (req, res) => {
-    console.log(cookie);
-    console.log(res.cookie);
-    console.log(req.cookies);
-    res.redirect("/linkedin/profile");
-  }
-);
-//profile of linkedin user
-app.get("/linkedin/profile", ensureAuthenticated, function (req, res) {
-  console.log(req.user);
-  res.render("index", {
-    user: req.user,
-    session: req.session.id,
-  });
-});
 //home route
 app.get("/", function (req, res) {
   res.send("<h1>Welcome</h1>");

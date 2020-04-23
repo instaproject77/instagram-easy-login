@@ -23,8 +23,6 @@
     "instagram-private-api": "github:huttarichard/instagram-private-api",
     "nodemailer": "^6.4.6",
     "nodemon": "^2.0.3",
-    "passport": "^0.4.1",
-    "passport-linkedin-oauth2": "^2.0.0",
     "path": "^0.12.7",
     "randomstring": "^1.1.5",
     "util": "^0.12.2"
