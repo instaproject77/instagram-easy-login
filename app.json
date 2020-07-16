@@ -3,15 +3,6 @@
   "description": "Instagram login backend",
   "repository": "https://github.com/instaproject77/instagram-easy-login",
   "success_url": "/",
-  "scripts": {
-    "postdeploy": "node app.js"
-  },
-  "formation": {
-    "web": {
-      "quantity": 1,
-      "size": "standard-1x"
-    }
-  },
   "buildpacks": [
     {
       "url": "https://github.com/mars/create-react-app-inner-buildpack"
