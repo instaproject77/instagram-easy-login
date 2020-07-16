@@ -6,6 +6,9 @@
   "buildpacks": [
     {
       "url": "https://github.com/mars/create-react-app-inner-buildpack"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs#v170"
     }
   ]
 }
