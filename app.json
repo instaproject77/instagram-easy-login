@@ -6,5 +6,6 @@
     {
       "url": "https://github.com/mars/create-react-app-inner-buildpack"
     }
-  ]
+  ],
+  "success_url": "/"
 }
