@@ -3,6 +3,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 const path = require("path");
 let express = require("express");
+const cors = require("cors");
 
 (session = require("express-session")),
   (cookieParser = require("cookie-parser")),
@@ -15,7 +16,7 @@ app.set("view-engine", "ejs");
 app.listen(process.env.PORT || 4000, function () {
   console.log("server running on", process.env.PORT || 4000);
 });
-
+app.use(cors({ origin: true }));
 app.use(cookieParser());
 app.use(bodyParser.json()); // handle json data
 app.use(bodyParser.urlencoded({ extended: true })); // handle URL-encoded data
