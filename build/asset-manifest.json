@@ -1,28 +1,29 @@
 {
   "files": {
-    "main.css": "/static/css/main.1a546dfd.chunk.css",
-    "main.js": "/static/js/main.cf1d5bec.chunk.js",
-    "main.js.map": "/static/js/main.cf1d5bec.chunk.js.map",
+    "main.css": "/static/css/main.6e4725b5.chunk.css",
+    "main.js": "/static/js/main.29ccb4df.chunk.js",
+    "main.js.map": "/static/js/main.29ccb4df.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.4dbcc610.js",
     "runtime-main.js.map": "/static/js/runtime-main.4dbcc610.js.map",
-    "static/js/2.d7e02053.chunk.js": "/static/js/2.d7e02053.chunk.js",
-    "static/js/2.d7e02053.chunk.js.map": "/static/js/2.d7e02053.chunk.js.map",
+    "static/js/2.c5656bc5.chunk.js": "/static/js/2.c5656bc5.chunk.js",
+    "static/js/2.c5656bc5.chunk.js.map": "/static/js/2.c5656bc5.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.eea4c40a6a952d28b17cb17b18978f4b.js": "/precache-manifest.eea4c40a6a952d28b17cb17b18978f4b.js",
+    "precache-manifest.277af6b0a0bd8b823ae32b4c93dddbed.js": "/precache-manifest.277af6b0a0bd8b823ae32b4c93dddbed.js",
     "service-worker.js": "/service-worker.js",
-    "static/css/main.1a546dfd.chunk.css.map": "/static/css/main.1a546dfd.chunk.css.map",
-    "static/js/2.d7e02053.chunk.js.LICENSE.txt": "/static/js/2.d7e02053.chunk.js.LICENSE.txt",
-    "static/media/facebook-logo.svg": "/static/media/facebook-logo.83f62166.svg",
-    "static/media/instagram-logo.svg": "/static/media/instagram-logo.156f8215.svg",
-    "static/media/linkedin-logo.svg": "/static/media/linkedin-logo.6f4c9fbd.svg",
+    "static/css/main.6e4725b5.chunk.css.map": "/static/css/main.6e4725b5.chunk.css.map",
+    "static/js/2.c5656bc5.chunk.js.LICENSE.txt": "/static/js/2.c5656bc5.chunk.js.LICENSE.txt",
+    "static/media/style.css": "/static/media/dark-bg-updated.0d7111d5.jpg",
+    "static/media/facebook-logo.svg": "/static/media/facebook-logo.c888480a.svg",
+    "static/media/instagram-logo.svg": "/static/media/instagram-logo.c1ea2611.svg",
+    "static/media/linkedin-logo.svg": "/static/media/linkedin-logo.ab5b573d.svg",
     "static/media/logo.png": "/static/media/logo.c6b5b406.png",
-    "static/media/pinterest-logo.svg": "/static/media/pinterest-logo.edf90ecf.svg",
-    "static/media/twitter-logo.svg": "/static/media/twitter-logo.c5840b5a.svg"
+    "static/media/pinterest-logo.svg": "/static/media/pinterest-logo.cab4ec59.svg",
+    "static/media/twitter-logo.svg": "/static/media/twitter-logo.cde0083c.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.4dbcc610.js",
-    "static/js/2.d7e02053.chunk.js",
-    "static/css/main.1a546dfd.chunk.css",
-    "static/js/main.cf1d5bec.chunk.js"
+    "static/js/2.c5656bc5.chunk.js",
+    "static/css/main.6e4725b5.chunk.css",
+    "static/js/main.29ccb4df.chunk.js"
   ]
 }
